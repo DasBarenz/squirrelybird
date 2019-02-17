@@ -1,3 +1,15 @@
+//need a "save article" function (like eat the burger) with paths that show saved and unsaved articles
+
+
+
+
+
+
+
+
+
+
+
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -85,8 +97,46 @@ app.post("/articles/:id", function (req, res) {
     .catch(function (err) {
       res.json(err);
     });
-
 });
+
+//this does not work
+app.get("/marksaved/:id", function (req, res) {
+    db.Article.updateOne({ _id: req.params.id }),
+    { 
+      set: {
+        saved: true
+      }
+    }, function (error, edited) {
+      if (error) {
+        console.log(error);
+        res.send(error); //this documents the error in the DB
+      } else {
+        res.send(edited);
+      }
+    }
+  })
+
+  // app.get("/markunread/:id", function(req, res) {
+  //   // Remember: when searching by an id, the id needs to be passed in
+  //   // as (mongojs.ObjectId(IdYouWantToFind))
+  //   db.Article.update({
+  //     _id:mongojs.ObjectId(req.params.id)
+  //   },
+  //   {
+  //     $set: {
+  //       read: false
+  //     }
+  //   }, function(error, edited) {
+  //     if (error) {
+  //       console.log(error);
+  //       res.send(error); //this documents the error in the DB
+  //     } else {
+  //       res.send(edited);
+  //     }
+  //   })
+  // });
+
+// });
 
 app.listen(3000, function () {
   console.log("App running on port 3000!");

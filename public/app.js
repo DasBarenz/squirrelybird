@@ -1,14 +1,11 @@
 // Grab the articles as a json
 $.getJSON("/articles", function(data) {
-  // For each one
-  for (var i = 0; i < data.length; i++) {
-    // Display the apropos information on the page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+    //a for loop in reverse!!
+  for (var i = data.length - 1; i >= 0; i--) {
+    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<button type=" + "button" + " name=" + "saveButton" + ">Save Article</button>" + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
   }
 });
 
-
-// Whenever someone clicks a p tag
 $(document).on("click", "p", function() {
   // Empty the notes from the note section
   $("#notes").empty();
@@ -24,7 +21,7 @@ $(document).on("click", "p", function() {
     .then(function(data) {
       console.log(data);
       // The title of the article
-      $("#notes").append("<h2>" + data.title + "</h2>");
+      $("#notes").append("<h3>" + data.title + "</h3>");
       // An input to enter a new title
       $("#notes").append("<input id='titleinput' name='title' >");
       // A textarea to add a new note body
