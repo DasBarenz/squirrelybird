@@ -2,7 +2,8 @@
 $.getJSON("/articles", function(data) {
     //a for loop in reverse!!
   for (var i = data.length - 1; i >= 0; i--) {
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<button type=" + "button" + " name=" + "saveButton" + ">Save Article</button>" + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+    $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
   }
 });
 
@@ -66,4 +67,22 @@ $(document).on("click", "#savenote", function() {
   // Also, remove the values entered in the input and textarea for note entry
   $("#titleinput").val("");
   $("#bodyinput").val("");
+});
+
+$(document).on("click", "#saveArticle", function() {
+  // Grab the id associated with the article from the submit button
+  var thisId = $(this).attr("data-id");
+  console.log("you clicked save")
+  // Run a POST request to change the note, using what's entered in the inputs
+  $.ajax({
+    method: "POST",
+    url: "/marksaved/" + thisId,
+    data: {
+      saved: true
+    }
+  })
+    // With that done
+    .then(function(data) {
+      console.log(data);
+    });
 });

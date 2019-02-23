@@ -11,7 +11,6 @@ var ArticleSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    saved: false
     // unique: { index: { unique: true } }
   },
   // `link` is required and of type String
@@ -26,6 +25,11 @@ var ArticleSchema = new Schema({
   note: {
     type: Schema.Types.ObjectId,
     ref: "Note"
+  },
+
+  saved: {
+    type: Boolean,
+    default: false
   }
 });
 

@@ -100,22 +100,23 @@ app.post("/articles/:id", function (req, res) {
 });
 
 //this does not work
-app.get("/marksaved/:id", function (req, res) {
-    db.Article.updateOne({ _id: req.params.id }),
+app.post("/marksaved/:id", function (req, res) {
+  console.log("this is the marksave area")
+  console.log(req.params)
+    db.Article.updateOne({ _id: req.params.id },
     { 
-      set: {
+      $set: {
         saved: true
       }
-    }, function (error, edited) {
-      if (error) {
-        console.log(error);
-        res.send(error); //this documents the error in the DB
-      } else {
-        res.send(edited);
-      }
-    }
-  })
-
+    }).then(function (dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
+});
+    
+    
   // app.get("/markunread/:id", function(req, res) {
   //   // Remember: when searching by an id, the id needs to be passed in
   //   // as (mongojs.ObjectId(IdYouWantToFind))
