@@ -1,13 +1,46 @@
 // Grab the articles as a json
-$.getJSON("/articles", function(data) {
-    //a for loop in reverse!!
-  for (var i = data.length - 1; i >= 0; i--) {
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
-    $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
-  }
-});
+// $.getJSON("/articles", function (data) {
+//   if (data.saved == false) {
+//     for (var i = data.length - 1; i >= 0; i--) {
+//       $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+//       $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
+//     }
+//   } else {
+//     for (var i = data.length - 1; i >= 0; i--) {
+//       $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+//       // $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
+//     }
+//     console.log(data)
+//   }
+// });
 
-$(document).on("click", "p", function() {
+function dataRender() {
+  $.getJSON("/articles", function (data) {
+    for (var i = data.length - 1; i >= 0; i--) {
+      if (data[i].saved == false) {
+        $("#unsaved").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+        $("#unsaved").append("<button type='button' class='btn btn-success' id='saveArticle' data-id=" + data[i]._id + " name='saveButton'" + ">Save Article</button>");
+      } else {
+        $("#saved").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+        $("#saved").append("<button type='button' class='btn btn-secondary' id='unsaveArticle' data-id=" + data[i]._id + " name='unsaveButton'" + ">Unsave Article</button>");
+      }
+      console.log(data)
+    }
+  });
+};
+
+dataRender();
+
+// $.getJSON("/articles", function (data) {
+//   for (var i = data.length - 1; i >= 0; i--) {
+//     $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
+//     $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
+//   }
+//   console.log(data)
+// });
+
+//note section
+$(document).on("click", "p", function () {
   // Empty the notes from the note section
   $("#notes").empty();
   // Save the id from the p tag
@@ -19,14 +52,14 @@ $(document).on("click", "p", function() {
     url: "/articles/" + thisId
   })
     // With that done, add the note information to the page
-    .then(function(data) {
+    .then(function (data) {
       console.log(data);
       // The title of the article
-      $("#notes").append("<h3>" + data.title + "</h3>");
+      $("#notes").append("<h4>" + data.title + "</h4>");
       // An input to enter a new title
-      $("#notes").append("<input id='titleinput' name='title' >");
+      $("#notes").append("<input id='titleinput' name='title' placeholder='Title'>");
       // A textarea to add a new note body
-      $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
+      $("#notes").append("<textarea id='bodyinput' name='body' placeholder='Note'></textarea>");
       // A button to submit a new note, with the id of the article saved to it
       $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
 
@@ -40,8 +73,8 @@ $(document).on("click", "p", function() {
     });
 });
 
-// When you click the savenote button
-$(document).on("click", "#savenote", function() {
+// savenote button
+$(document).on("click", "#savenote", function () {
   // Grab the id associated with the article from the submit button
   var thisId = $(this).attr("data-id");
 
@@ -57,7 +90,7 @@ $(document).on("click", "#savenote", function() {
     }
   })
     // With that done
-    .then(function(data) {
+    .then(function (data) {
       // Log the response
       console.log(data);
       // Empty the notes section
@@ -69,11 +102,10 @@ $(document).on("click", "#savenote", function() {
   $("#bodyinput").val("");
 });
 
-$(document).on("click", "#saveArticle", function() {
-  // Grab the id associated with the article from the submit button
+$(document).on("click", "#saveArticle", function () {
   var thisId = $(this).attr("data-id");
   console.log("you clicked save")
-  // Run a POST request to change the note, using what's entered in the inputs
+
   $.ajax({
     method: "POST",
     url: "/marksaved/" + thisId,
@@ -81,8 +113,25 @@ $(document).on("click", "#saveArticle", function() {
       saved: true
     }
   })
-    // With that done
-    .then(function(data) {
+    .then(function (data) {
       console.log(data);
+      dataRender();
+    });
+});
+
+$(document).on("click", "#unsaveArticle", function () {
+  var thisId = $(this).attr("data-id");
+  console.log("you clicked unsave on id# " + $(this).attr("data-id"))
+
+  $.ajax({
+    method: "POST",
+    url: "/markunsaved/" + thisId,
+    data: {
+      saved: false
+    }
+  })
+    .then(function (data) {
+      console.log(data);
+      dataRender();
     });
 });

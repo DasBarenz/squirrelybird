@@ -1,45 +1,22 @@
-//need a "save article" function (like eat the burger) with paths that show saved and unsaved articles
-
-
-
-
-
-
-
-
-
-
-
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-// Require all models
 var db = require("./models");
-
 var PORT = 3000;
-
-// Initialize Express
 var app = express();
 
-// Configure middleware
+// middleware
 
-// Use morgan logger for logging requests
 app.use(logger("dev"));
-// Parse request body as JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Make public a static folder
 app.use(express.static("public"));
 
-// Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/squirrelyBird", { useNewUrlParser: true });
-
 app.get("/scrape", function (req, res) {
-  // this scrapes, console logs in node and puts objects on /articles
   axios.get("https://www.duffelblog.com/").then(function (response) {
     var $ = cheerio.load(response.data);
 
@@ -62,7 +39,6 @@ app.get("/scrape", function (req, res) {
   });
 });
 
-//this works! 
 app.get("/articles", function (req, res) {
   db.Article.find({})
     .then(function (dbArticle) {
@@ -73,7 +49,6 @@ app.get("/articles", function (req, res) {
     });
 });
 
-//these routes below now also work!
 app.get("/articles/:id", function (req, res) {
   db.Article.findOne({ _id: req.params.id })
 
@@ -99,12 +74,11 @@ app.post("/articles/:id", function (req, res) {
     });
 });
 
-//this does not work
 app.post("/marksaved/:id", function (req, res) {
   console.log("this is the marksave area")
   console.log(req.params)
-    db.Article.updateOne({ _id: req.params.id },
-    { 
+  db.Article.updateOne({ _id: req.params.id },
+    {
       $set: {
         saved: true
       }
@@ -115,29 +89,22 @@ app.post("/marksaved/:id", function (req, res) {
       res.json(err);
     });
 });
-    
-    
-  // app.get("/markunread/:id", function(req, res) {
-  //   // Remember: when searching by an id, the id needs to be passed in
-  //   // as (mongojs.ObjectId(IdYouWantToFind))
-  //   db.Article.update({
-  //     _id:mongojs.ObjectId(req.params.id)
-  //   },
-  //   {
-  //     $set: {
-  //       read: false
-  //     }
-  //   }, function(error, edited) {
-  //     if (error) {
-  //       console.log(error);
-  //       res.send(error); //this documents the error in the DB
-  //     } else {
-  //       res.send(edited);
-  //     }
-  //   })
-  // });
 
-// });
+app.post("/markunsaved/:id", function (req, res) {
+  console.log("this is the unsave area")
+  console.log(req.params)
+  db.Article.updateOne({ _id: req.params.id },
+    {
+      $set: {
+        saved: false
+      }
+    }).then(function (dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
+});
 
 app.listen(3000, function () {
   console.log("App running on port 3000!");
