@@ -31,14 +31,6 @@ function dataRender() {
 
 dataRender();
 
-// $.getJSON("/articles", function (data) {
-//   for (var i = data.length - 1; i >= 0; i--) {
-//     $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + "<span class=links>" + data[i].link + "</span>" + "</p>");
-//     $("#articles").append("<button type=" + "button" + " id=" + "saveArticle " + "data-id=" + data[i]._id + " name=" + "saveButton" + ">Save Article</button>");
-//   }
-//   console.log(data)
-// });
-
 //note section
 $(document).on("click", "p", function () {
   // Empty the notes from the note section
@@ -115,7 +107,7 @@ $(document).on("click", "#saveArticle", function () {
   })
     .then(function (data) {
       console.log(data);
-      dataRender();
+      location.reload()
     });
 });
 
@@ -132,6 +124,6 @@ $(document).on("click", "#unsaveArticle", function () {
   })
     .then(function (data) {
       console.log(data);
-      dataRender();
+      location.reload()
     });
 });
